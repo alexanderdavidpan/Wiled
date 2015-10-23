@@ -20,15 +20,15 @@ angular.module('Wiled', ['ionic'])
 
 angular.module('Wiled', ['ionic'])
 
-.controller('NewsfeedCtrl', function($scope, $ionicModal) {
+.controller('NewsfeedCtrl', function($scope, $ionicModal, $http) {
   $scope.posts = [
-    { title: 'Collect coins' },
-    { title: 'Eat mushrooms' },
-    { title: 'Get high enough to grab the flag' },
-    { title: 'Find the Princess' }
+
   ];
 
-  $scope.users = [];
+  $scope.users = [
+    { username: 'Here_Comes_The_King' },
+    { username: 'GovSchwarzenegger' }
+  ];
 
   // Create and load the Modal
   $ionicModal.fromTemplateUrl('new-user.html', function(modal) {
@@ -45,6 +45,7 @@ angular.module('Wiled', ['ionic'])
     });
     $scope.userModal.hide();
     user.title = "";
+    $scope.fetchUserPosts(user)
   };
 
   // Open our new user modal
@@ -56,4 +57,26 @@ angular.module('Wiled', ['ionic'])
   $scope.closeNewUser = function() {
     $scope.userModal.hide();
   };
+
+  // Fetch user posts
+  $scope.fetchUserPosts = function(user) {
+    $http.get('https://www.reddit.com/user/' + user.username + '/submitted.json').then(function(resp) {
+      userPosts = resp['data']['data']['children']
+      for (post in userPosts) {
+        $scope.posts.push({
+          title: userPosts[post]['data']['title'],
+          author: userPosts[post]['data']['author'],
+          url: userPosts[post]['data']['url']
+        });
+      }
+    }, function(err) {
+      console.error('ERR', err);
+      // err.status will contain the status code
+    }) 
+  };
+
+  angular.forEach($scope.users, function(user){
+    $scope.fetchUserPosts(user);
+  })
+
 });
