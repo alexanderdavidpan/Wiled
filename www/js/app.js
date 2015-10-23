@@ -66,17 +66,35 @@ angular.module('Wiled', ['ionic'])
         $scope.posts.push({
           title: userPosts[post]['data']['title'],
           author: userPosts[post]['data']['author'],
-          url: userPosts[post]['data']['url']
+          url: userPosts[post]['data']['url'],
+          created: userPosts[post]['data']['created']
         });
       }
+
+      //sort newsfeed by created date after new posts are fetched
+      $scope.sortNewsfeed($scope.posts)
     }, function(err) {
       console.error('ERR', err);
       // err.status will contain the status code
     }) 
   };
 
+  // Sort newsfeed
+  $scope.sortNewsfeed = function(list) {
+    console.log(list)
+    list.sort(function(a, b){
+      var keyA = new Date(a.created),
+      keyB = new Date(b.created);
+      // Compare the 2 dates
+      if(keyA > keyB) return -1;
+      if(keyA < keyB) return 1;
+      return 0;
+    });
+  };
+
   angular.forEach($scope.users, function(user){
     $scope.fetchUserPosts(user);
+    $scope.sortNewsfeed($scope.posts)
   })
 
 });
