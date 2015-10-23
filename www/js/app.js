@@ -20,11 +20,40 @@ angular.module('Wiled', ['ionic'])
 
 angular.module('Wiled', ['ionic'])
 
-.controller('NewsfeedCtrl', function($scope) {
+.controller('NewsfeedCtrl', function($scope, $ionicModal) {
   $scope.posts = [
     { title: 'Collect coins' },
     { title: 'Eat mushrooms' },
     { title: 'Get high enough to grab the flag' },
     { title: 'Find the Princess' }
   ];
+
+  $scope.users = [];
+
+  // Create and load the Modal
+  $ionicModal.fromTemplateUrl('new-user.html', function(modal) {
+    $scope.userModal = modal;
+  }, {
+    scope: $scope,
+    animation: 'slide-in-up'
+  });
+
+  // Called when the form is submitted
+  $scope.addUser = function(user) {
+    $scope.users.push({
+      username: user.username
+    });
+    $scope.userModal.hide();
+    user.title = "";
+  };
+
+  // Open our new user modal
+  $scope.newUser = function() {
+    $scope.userModal.show();
+  };
+
+  // Close the new user modal
+  $scope.closeNewUser = function() {
+    $scope.userModal.hide();
+  };
 });
