@@ -48,6 +48,13 @@ angular.module('Wiled', ['ionic'])
     $scope.fetchUserPosts(user)
   };
 
+  // Unfollow a user
+  $scope.unfollowUser = function(user) {
+    $scope.users.splice(user.username, 1);
+
+    $scope.removeUserPosts(user)
+  };
+
   // Open our new user modal
   $scope.newUser = function() {
     $scope.userModal.show();
@@ -79,9 +86,17 @@ angular.module('Wiled', ['ionic'])
     }) 
   };
 
+  // Remove user posts
+  $scope.removeUserPosts = function(user) {
+    for(var i = $scope.posts.length -1; i >= 0 ; i--){
+      if($scope.posts[i]['author'] === user.username){
+        $scope.posts.splice(i, 1);
+      }
+    }
+  }
+
   // Sort newsfeed
   $scope.sortNewsfeed = function(list) {
-    console.log(list)
     list.sort(function(a, b){
       var keyA = new Date(a.created),
       keyB = new Date(b.created);

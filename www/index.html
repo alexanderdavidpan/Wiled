@@ -52,9 +52,10 @@
 
         <ion-content>
           <!-- Users List -->
-          <ion-list>
+          <ion-list  can-swipe="true">
             <ion-item ng-repeat="user in users">
               {{user.username}}
+              <ion-option-button class="button-assertive" ng-click="unfollowUser(user)">Unfollow</ion-option-button>
             </ion-item>
           </ion-list>
         </ion-content>
