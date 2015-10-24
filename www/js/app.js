@@ -50,9 +50,13 @@ angular.module('Wiled', ['ionic'])
 
   // Unfollow a user
   $scope.unfollowUser = function(user) {
-    $scope.users.splice(user.username, 1);
-
-    $scope.removeUserPosts(user)
+    for (var i = 0; i < $scope.users.length; i++) {
+      if ($scope.users[i]['username'] === user.username) { 
+        $scope.users.splice(i, 1);
+        break;
+      }
+    }
+    $scope.removeUserPosts(user);
   };
 
   // Open our new user modal
