@@ -74,6 +74,7 @@ angular.module('Wiled', ['ionic'])
           title: userPosts[post]['data']['title'],
           author: userPosts[post]['data']['author'],
           url: userPosts[post]['data']['url'],
+          subreddit: userPosts[post]['data']['subreddit'],
           created: userPosts[post]['data']['created']
         });
       }
