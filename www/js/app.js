@@ -20,7 +20,7 @@ angular.module('Wiled', ['ionic'])
 
 angular.module('Wiled', ['ionic'])
 
-.controller('NewsfeedCtrl', function($scope, $ionicModal, $http) {
+.controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup) {
   $scope.posts = [
 
   ];
@@ -40,12 +40,28 @@ angular.module('Wiled', ['ionic'])
 
   // Called when the form is submitted
   $scope.addUser = function(user) {
-    $scope.users.push({
-      username: user.username
-    });
-    $scope.userModal.hide();
-    user.title = "";
-    $scope.fetchUserPosts(user)
+    var isExistingUser = $scope.checkExistingFollowedUser(user);
+
+    if(!isExistingUser){
+      $scope.users.push({
+        username: user.username
+      });
+      $scope.userModal.hide();
+      user.title = "";
+      $scope.fetchUserPosts(user);
+    }
+  };
+
+  // Check for existing followed user
+  $scope.checkExistingFollowedUser = function(user) {
+    for (var i = 0; i < $scope.users.length; i++) {
+      if ($scope.users[i]['username'] === user.username) { 
+        $scope.showAlert('Alert!', user.username + ' is already being followed.');
+        $scope.closeNewUser();
+        return true;
+      }
+    }
+    return false;
   };
 
   // Unfollow a user
@@ -119,6 +135,17 @@ angular.module('Wiled', ['ionic'])
       if(keyA > keyB) return -1;
       if(keyA < keyB) return 1;
       return 0;
+    });
+  };
+
+  // Alert dialog
+  $scope.showAlert = function(title, template) {
+    var alertPopup = $ionicPopup.alert({
+      title: title,
+      template: template
+    });
+    alertPopup.then(function(res) {
+      console.log(title + ' - ' + template);
     });
   };
 
