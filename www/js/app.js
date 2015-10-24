@@ -70,10 +70,20 @@ angular.module('Wiled', ['ionic'])
     $http.get('https://www.reddit.com/user/' + user.username + '/submitted.json').then(function(resp) {
       userPosts = resp['data']['data']['children']
       for (post in userPosts) {
+        // check for thumbnail
+        var media = userPosts[post]['data']['media']
+        if (media === null) {
+          thumbnail_url = null;
+        } else {
+          thumbnail_url = media['oembed']['thumbnail_url']
+        }
+
+        //add post
         $scope.posts.push({
           title: userPosts[post]['data']['title'],
           author: userPosts[post]['data']['author'],
           url: userPosts[post]['data']['url'],
+          thumbnail_url: thumbnail_url,
           subreddit: userPosts[post]['data']['subreddit'],
           created: userPosts[post]['data']['created']
         });
