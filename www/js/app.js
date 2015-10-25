@@ -18,17 +18,31 @@ angular.module('Wiled', ['ionic'])
   });
 })
 
-angular.module('Wiled', ['ionic'])
+angular.module('ionic.utils', [])
 
-.controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup) {
-  $scope.posts = [
+.factory('$localstorage', ['$window', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '{}');
+    }
+  }
+}]);
 
-  ];
+angular.module('Wiled', ['ionic', 'ionic.utils'])
 
-  $scope.users = [
-    { username: 'Here_Comes_The_King' },
-    { username: 'GovSchwarzenegger' }
-  ];
+.controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup, $localstorage) {
+  $scope.posts = [];
+
+  $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
 
   // Create and load the Modal
   $ionicModal.fromTemplateUrl('new-user.html', function(modal) {
@@ -46,6 +60,7 @@ angular.module('Wiled', ['ionic'])
       $scope.users.push({
         username: user.username
       });
+      $scope.addUserToLocalStorage(user);
       $scope.userModal.hide();
       user.title = "";
       $scope.fetchUserPosts(user);
@@ -72,6 +87,7 @@ angular.module('Wiled', ['ionic'])
         break;
       }
     }
+    $scope.removeUserFromLocalStorage(user);
     $scope.removeUserPosts(user);
   };
 
@@ -147,6 +163,34 @@ angular.module('Wiled', ['ionic'])
     alertPopup.then(function(res) {
       console.log(title + ' - ' + template);
     });
+  };
+
+  //Add username to localstorage
+  $scope.addUserToLocalStorage = function(user) {
+    // Parse any JSON previously stored in allEntries
+    var existingEntries = JSON.parse(localStorage.getItem("users"));
+    if(existingEntries == null) existingEntries = [];
+
+    localStorage.setItem("users", JSON.stringify(user));
+    // Save allEntries back to local storage
+    existingEntries.push(user);
+    localStorage.setItem("users", JSON.stringify(existingEntries));
+  };
+
+  //Remove username from localstorage
+  $scope.removeUserFromLocalStorage = function(user) {
+    // Parse any JSON previously stored in allEntries
+    var existingEntries = JSON.parse(localStorage.getItem("users"));
+    if(existingEntries == null) existingEntries = [];
+
+    // Save allEntries back to local storage
+    for(var i = existingEntries.length -1; i >= 0 ; i--){
+      if(existingEntries[i]['username'] === user.username){
+        existingEntries.splice(i, 1);
+      }
+    }
+
+    localStorage.setItem("users", JSON.stringify(existingEntries));
   };
 
   angular.forEach($scope.users, function(user){
