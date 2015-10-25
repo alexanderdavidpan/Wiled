@@ -39,7 +39,7 @@ angular.module('ionic.utils', [])
 
 angular.module('Wiled', ['ionic', 'ionic.utils'])
 
-.controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup, $localstorage) {
+.controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup, $localstorage, $ionicActionSheet) {
   $scope.posts = [];
 
   $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
@@ -121,12 +121,13 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
           url: userPosts[post]['data']['url'],
           thumbnail_url: thumbnail_url,
           subreddit: userPosts[post]['data']['subreddit'],
+          score: userPosts[post]['data']['score'],
           created: userPosts[post]['data']['created']
         });
       }
 
       //sort newsfeed by created date after new posts are fetched
-      $scope.sortNewsfeed($scope.posts)
+      $scope.sortNewsfeedByNewest($scope.posts)
     }, function(err) {
       console.error('ERR', err);
       // err.status will contain the status code
@@ -142,11 +143,23 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     }
   }
 
-  // Sort newsfeed
-  $scope.sortNewsfeed = function(list) {
+  // Sort newsfeed by newest descending
+  $scope.sortNewsfeedByNewest = function(list) {
     list.sort(function(a, b){
       var keyA = new Date(a.created),
       keyB = new Date(b.created);
+      // Compare the 2 dates
+      if(keyA > keyB) return -1;
+      if(keyA < keyB) return 1;
+      return 0;
+    });
+  };
+
+  // Sort newsfeed by popularity (most points)
+  $scope.sortNewsfeedByPopular = function(list) {
+    list.sort(function(a, b){
+      var keyA = new Date(a.score),
+      keyB = new Date(b.score);
       // Compare the 2 dates
       if(keyA > keyB) return -1;
       if(keyA < keyB) return 1;
@@ -193,9 +206,35 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     localStorage.setItem("users", JSON.stringify(existingEntries));
   };
 
+  // Show sort options
+  $scope.showSortOptions = function() {
+    var hideSheet = $ionicActionSheet.show({
+      buttons: [
+        { text: 'New' },
+        { text: 'Popular' }
+      ],
+      titleText: 'Sort posts by:',
+      cancelText: 'Cancel',
+      cancel: function() {
+        return false;
+      },
+      buttonClicked: function(index) {
+        //index is the index of button clicked
+        // {0: 'New', 1: 'Popular'}
+        if (index === 1) {
+          $scope.sortNewsfeedByPopular($scope.posts);
+          return true;
+        } else {
+          $scope.sortNewsfeedByNewest($scope.posts);
+          return true;
+        }
+      }
+    });
+  };
+
   angular.forEach($scope.users, function(user){
     $scope.fetchUserPosts(user);
-    $scope.sortNewsfeed($scope.posts)
+    $scope.sortNewsfeedByNewest($scope.posts)
   })
 
 });
