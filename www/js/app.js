@@ -206,6 +206,17 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     localStorage.setItem("users", JSON.stringify(existingEntries));
   };
 
+  //Reorder users in localstorage
+  $scope.reorderUsersInLocalStorage = function(user, fromIndex, toIndex) {
+    $scope.users.splice(fromIndex, 1);
+    $scope.users.splice(toIndex, 0, user);
+    localStorage.setItem("users", JSON.stringify($scope.users));
+  };
+
+  $scope.data = {
+    showReorder: false
+  };
+
   // Show sort options
   $scope.showSortOptions = function() {
     var hideSheet = $ionicActionSheet.show({

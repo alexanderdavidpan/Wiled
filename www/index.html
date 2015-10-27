@@ -50,18 +50,23 @@
       <ion-side-menu side="left">
         <ion-header-bar class="bar-dark">
           <h1 class="title">Users</h1>
+            <!-- Reorder Users button-->
+            <button class="button" ng-click="data.showReorder = !data.showReorder">
+              <i class="icon ion-ios-drag"></i>
+            </button>
             <!-- New User button-->
-            <button class="button button-icon" ng-click="newUser()">
+            <button class="button" ng-click="newUser()">
               <i class="icon ion-person-add"></i>
             </button>
         </ion-header-bar>
 
         <ion-content>
           <!-- Users List -->
-          <ion-list  can-swipe="true">
-            <ion-item ng-repeat="user in users">
+          <ion-list  show-reorder="data.showReorder" can-swipe="true">
+            <ion-item ng-repeat="user in users track by $index" >
               {{user.username}}
               <ion-option-button class="button-assertive" ng-click="unfollowUser(user)">Unfollow</ion-option-button>
+              <ion-reorder-button class="ion-navicon" on-reorder="reorderUsersInLocalStorage(user, $fromIndex, $toIndex)"></ion-reorder-button>
             </ion-item>
           </ion-list>
         </ion-content>
