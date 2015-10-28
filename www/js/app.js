@@ -132,6 +132,7 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
 
       //sort newsfeed by created date after new posts are fetched
       $scope.sortNewsfeedByNewest($scope.posts)
+      $scope.checkAlreadyFavoritedPosts();
     }, function(err) {
       console.error('ERR', err);
       // err.status will contain the status code
@@ -237,6 +238,25 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
       }
     }
     return false;
+  };
+
+  // Check for already favorited posts
+  // Loops through all favorite post ids
+  // Marks posts as favorited if ids match
+  $scope.checkAlreadyFavoritedPosts = function(){
+    favoritePostIds = [];
+
+    for (i in $scope.favoritePosts){
+      favoritePostIds.push($scope.favoritePosts[i]['id'])
+    }
+
+    for (i in $scope.posts) {
+      for (j in favoritePostIds) {
+        if($scope.posts[i]['id'] === favoritePostIds[j]) {
+          $scope.posts[i]['favorited'] = true;
+        }
+      }
+    }
   };
 
   $scope.favorite = function(post) {
