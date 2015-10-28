@@ -230,6 +230,22 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     localStorage.setItem("favoritePosts", JSON.stringify(existingEntries));
   };
 
+  //Remove favorite post to localstorage
+  $scope.removeFavoritePostFromLocalStorage = function(post) {
+    // Parse any JSON previously stored in allEntries
+    var existingEntries = JSON.parse(localStorage.getItem("favoritePosts"));
+    if(existingEntries == null) existingEntries = [];
+
+    // Save allEntries back to local storage
+    for(var i = existingEntries.length -1; i >= 0 ; i--){
+      if(existingEntries[i]['id'] === post.id){
+        existingEntries.splice(i, 1);
+      }
+    }
+
+    localStorage.setItem("favoritePosts", JSON.stringify(existingEntries));
+  };
+
   // Check for existing favorited post
   $scope.checkExistingFavoritedPost = function(post) {
     for (var i = 0; i < $scope.favoritePosts.length; i++) {
@@ -259,12 +275,29 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     }
   };
 
+  //Favorite a post and add it to localstorage
   $scope.favorite = function(post) {
     var isFavoritedPost = $scope.checkExistingFavoritedPost(post);
 
     if(!isFavoritedPost){
       $scope.favoritePosts.push(post);
       $scope.addFavoritePostToLocalStorage(post);
+    }
+  };
+
+  //Unfavorite a post and remove it from localstorage
+  $scope.unfavorite = function(post) {
+    var isFavoritedPost = $scope.checkExistingFavoritedPost(post);
+
+    if(isFavoritedPost){
+
+      for(var i = $scope.favoritePosts.length -1; i >= 0 ; i--){
+        if($scope.favoritePosts[i]['id'] === post.id){
+          $scope.favoritePosts.splice(i, 1);
+        }
+      }
+
+      $scope.removeFavoritePostFromLocalStorage(post);
     }
   };
 
