@@ -1,1 +1,8 @@
 /* Empty. Add your own CSS if you like */
+ion-option-button.ion-ios-heart-outline, ion-option-button.ion-ios-heart {
+  font-size: 200%;
+}
+
+.ion-ios-heart, .ion-ios-heart:hover  {
+  color: red;
+}

@@ -42,6 +42,8 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
 .controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup, $localstorage, $ionicActionSheet) {
   $scope.posts = [];
 
+  $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
+
   $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
 
   // Create and load the Modal
@@ -116,12 +118,14 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
 
         //add post
         $scope.posts.push({
+          id: userPosts[post]['data']['id'],
           title: userPosts[post]['data']['title'],
           author: userPosts[post]['data']['author'],
           url: userPosts[post]['data']['url'],
           thumbnail_url: thumbnail_url,
           subreddit: userPosts[post]['data']['subreddit'],
           score: userPosts[post]['data']['score'],
+          favorited: false,
           created: userPosts[post]['data']['created']
         });
       }
@@ -213,6 +217,37 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     localStorage.setItem("users", JSON.stringify($scope.users));
   };
 
+  //Add favorite post to localstorage
+  $scope.addFavoritePostToLocalStorage = function(post) {
+    // Parse any JSON previously stored in allEntries
+    var existingEntries = JSON.parse(localStorage.getItem("favoritePosts"));
+    if(existingEntries == null) existingEntries = [];
+
+    localStorage.setItem("favoritePosts", JSON.stringify(post));
+    // Save allEntries back to local storage
+    existingEntries.push(post);
+    localStorage.setItem("favoritePosts", JSON.stringify(existingEntries));
+  };
+
+  // Check for existing favorited post
+  $scope.checkExistingFavoritedPost = function(post) {
+    for (var i = 0; i < $scope.favoritePosts.length; i++) {
+      if ($scope.favoritePosts[i]['id'] === post.id) { 
+        return true;
+      }
+    }
+    return false;
+  };
+
+  $scope.favorite = function(post) {
+    var isFavoritedPost = $scope.checkExistingFavoritedPost(post);
+
+    if(!isFavoritedPost){
+      $scope.favoritePosts.push(post);
+      $scope.addFavoritePostToLocalStorage(post);
+    }
+  };
+
   $scope.data = {
     showReorder: false
   };
@@ -248,4 +283,24 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     $scope.sortNewsfeedByNewest($scope.posts)
   })
 
+})
+
+//Icon switch function to change icon on click
+.directive('iconSwitcher', function() {
+  return {
+    restrict : 'A', 
+    link : function(scope, elem, attrs) {   
+      var currentState = true;
+      elem.on('click', function() {
+        if(currentState === true) {
+          angular.element(elem).removeClass(attrs.onIcon);
+          angular.element(elem).addClass(attrs.offIcon);
+        } else {
+          angular.element(elem).removeClass(attrs.offIcon);
+          angular.element(elem).addClass(attrs.onIcon);
+        }
+        currentState = !currentState
+      });
+    }
+  };
 });
