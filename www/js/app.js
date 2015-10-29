@@ -39,7 +39,14 @@ angular.module('ionic.utils', [])
 
 angular.module('Wiled', ['ionic', 'ionic.utils'])
 
-.controller('NewsfeedCtrl', function($scope, $ionicModal, $http, $ionicPopup, $localstorage, $ionicActionSheet) {
+.controller('NewsfeedCtrl', function($scope, 
+                                     $ionicModal, 
+                                     $http, 
+                                     $ionicPopup, 
+                                     $localstorage, 
+                                     $ionicActionSheet,
+                                     $ionicSideMenuDelegate) {
+
   $scope.posts = [];
 
   $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
@@ -53,6 +60,12 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     scope: $scope,
     animation: 'slide-in-up'
   });
+
+  // Toggle left side menu
+  $scope.toggleLeftSideMenu = function() {
+    $ionicSideMenuDelegate.toggleLeft();
+    $ionicSideMenuDelegate.canDragContent(false);
+  };
 
   // Called when the form is submitted
   $scope.addUser = function(user) {
