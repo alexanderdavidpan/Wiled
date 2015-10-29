@@ -344,10 +344,22 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     });
   };
 
-  angular.forEach($scope.users, function(user){
-    $scope.fetchUserPosts(user);
-    $scope.sortNewsfeedByNewest($scope.posts)
-  })
+  // Show favorited posts
+  $scope.showFavoritePosts = function() {
+    $scope.posts = $scope.favoritePosts;
+    $scope.sortNewsfeedByNewest($scope.posts);
+  };
+
+  // Show regular newsfeed
+  $scope.showDefaultNewsfeed = function() {
+    angular.forEach($scope.users, function(user){
+      $scope.posts = [];
+      $scope.fetchUserPosts(user);
+      $scope.sortNewsfeedByNewest($scope.posts)
+    })
+  };
+
+  $scope.showDefaultNewsfeed();
 
 })
 
