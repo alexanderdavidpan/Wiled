@@ -36,7 +36,7 @@
             <button class="button" ng-click="showSortOptions()">Sort</button>
           </div>
         </ion-header-bar>
-        <ion-content>
+        <ion-content class="has-footer">
           <!-- Newsfeed and Posts -->
           <ion-list>
             <ion-item ng-repeat="post in posts track by $index" class="item item-thumbnail-left" href="{{post.url}}">
@@ -67,7 +67,7 @@
             </button>
         </ion-header-bar>
 
-        <ion-content>
+        <ion-content class="has-footer">
           <!-- Users List -->
           <ion-list  show-reorder="data.showReorder" can-swipe="true">
             <ion-item ng-repeat="user in users track by $index" >
