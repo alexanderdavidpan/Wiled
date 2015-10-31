@@ -62,16 +62,16 @@
               <i class="icon ion-ios-drag"></i>
             </button>
             <!-- New User button-->
-            <button class="button" ng-click="newUser()">
+            <button id= "add-user-button" class="button" ng-click="newUser()">
               <i class="icon ion-person-add"></i>
             </button>
         </ion-header-bar>
 
         <ion-content class="has-footer">
           <!-- Users List -->
-          <ion-list  show-reorder="data.showReorder" can-swipe="true">
-            <ion-item ng-repeat="user in users track by $index" >
-              {{user.username}}
+          <ion-list show-reorder="data.showReorder" can-swipe="true">
+            <ion-item class="username-list-item" ng-repeat="user in users track by $index" >
+              <p class="username">{{user.username}}</p>
               <ion-option-button class="button-assertive" ng-click="unfollowUser(user)">Unfollow</ion-option-button>
               <ion-reorder-button class="ion-navicon" on-reorder="reorderUsersInLocalStorage(user, $fromIndex, $toIndex)"></ion-reorder-button>
             </ion-item>
