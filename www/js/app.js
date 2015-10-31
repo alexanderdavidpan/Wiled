@@ -45,7 +45,8 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
                                      $ionicPopup, 
                                      $localstorage, 
                                      $ionicActionSheet,
-                                     $ionicSideMenuDelegate) {
+                                     $ionicSideMenuDelegate,
+                                     $q) {
 
   $scope.posts = [];
 
@@ -67,19 +68,26 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     $ionicSideMenuDelegate.canDragContent(false);
   };
 
-  // Called when the form is submitted
+  // Adds a user when the add user form is submitted
   $scope.addUser = function(user) {
     var isExistingUser = $scope.checkExistingFollowedUser(user);
 
-    if(!isExistingUser){
-      $scope.users.push({
-        username: user.username
-      });
-      $scope.addUserToLocalStorage(user);
-      $scope.userModal.hide();
-      user.title = "";
-      $scope.fetchUserPosts(user);
-    }
+    $scope.verifyUser(user).then(function(resp){
+      username = resp['data']['data']['name']
+      //Set username to correct format based on reddit data
+      user.username = username
+      if(!isExistingUser){
+        $scope.users.push({
+          username: username
+        });
+        $scope.addUserToLocalStorage(user);
+        $scope.userModal.hide();
+        user.title = "";
+        $scope.fetchUserPosts(user);
+      } else {
+        return false;
+      }
+    })
   };
 
   // Check for existing followed user
@@ -92,6 +100,22 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
       }
     }
     return false;
+  };
+
+  //Verify reddit user exists
+  $scope.verifyUser = function(user) {
+    var defer = $q.defer();
+
+    $http.get('https://www.reddit.com/user/' + user.username + '/about.json').then(function(resp) {
+      //Must resolve deffered promise to get correct username before adding user
+      defer.resolve(resp);
+    }, function(err) {
+      console.error('Error: Not a valid reddit username', err);
+      $scope.closeNewUser();
+      $scope.showAlert('Alert!', user.username + ' is not a valid username.');
+      return false;
+    });
+    return defer.promise;
   };
 
   // Unfollow a user
