@@ -372,6 +372,7 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
   $scope.showFavoritePosts = function() {
     $scope.posts = $scope.favoritePosts;
     $scope.sortNewsfeedByNewest($scope.posts);
+    $scope.checkAlreadyFavoritedPosts();
   };
 
   // Show regular newsfeed
