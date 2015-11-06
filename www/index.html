@@ -44,9 +44,9 @@
               <img ng-if="post.thumbnail_url === null" ng-src="img/reddit-missing-thumbnail.png">
               <h2>{{post.title}}</h2>
               <p><span style="color:blue">{{post.subreddit}}</span> {{post.author}}</p>
-              <ion-option-button ng-if="post.favorited === false" class="button ion-ios-heart-outline" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" icon-switcher ng-click="favorite(post)">
+              <ion-option-button ng-if="post.favorited === false" class="ion-ios-heart-outline" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher ng-click="favorite(post)">
               </ion-option-button>
-              <ion-option-button ng-if="post.favorited" class="button ion-ios-heart" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" icon-switcher ng-click="unfavorite(post)">
+              <ion-option-button ng-if="post.favorited" class="ion-ios-heart" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher ng-click="unfavorite(post)">
               </ion-option-button>
             </ion-item>
           </ion-list>

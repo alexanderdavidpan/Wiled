@@ -389,20 +389,20 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
 })
 
 //Icon switch function to change icon on click
-.directive('iconSwitcher', function() {
+.directive('favoriteIconSwitcher', function() {
   return {
     restrict : 'A', 
     link : function(scope, elem, attrs) {   
-      var currentState = true;
+      var favorited = (attrs.class === 'ion-ios-heart button');
       elem.on('click', function() {
-        if(currentState === true) {
+        if(favorited === true) {
           angular.element(elem).removeClass(attrs.onIcon);
           angular.element(elem).addClass(attrs.offIcon);
         } else {
           angular.element(elem).removeClass(attrs.offIcon);
           angular.element(elem).addClass(attrs.onIcon);
         }
-        currentState = !currentState
+        favorited = !favorited
       });
     }
   };
