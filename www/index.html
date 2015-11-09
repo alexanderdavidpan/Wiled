@@ -21,6 +21,13 @@
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
+    <!-- script to open links using inappbrowser -->
+    <script>
+    function openExternal(elem) {
+      window.open(elem.getAttribute('href'), '_system', 'location=yes');
+      return false; // Prevent execution of the default onClick handler 
+    }
+    </script>
   </head>
     <body ng-app="Wiled" ng-controller="NewsfeedCtrl">
       <ion-side-menus>
@@ -39,14 +46,14 @@
         <ion-content class="has-footer">
           <!-- Newsfeed and Posts -->
           <ion-list>
-            <ion-item ng-repeat="post in posts track by $index" class="item item-thumbnail-left item-text-wrap" href="{{post.url}}">
+            <ion-item ng-repeat="post in posts track by $index" class="item item-thumbnail-left item-text-wrap" href="{{post.url}}" onclick="javascript:return openExternal(this)" >
               <img ng-if="post.thumbnail_url !== null" ng-src="{{ post.thumbnail_url }}">
               <img ng-if="post.thumbnail_url === null" ng-src="img/reddit-missing-thumbnail.png">
               <h2>{{post.title}}</h2>
               <p><span style="color:blue">{{post.subreddit}}</span> {{post.author}}</p>
-              <ion-option-button ng-if="post.favorited === false" class="ion-ios-heart-outline" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher ng-click="favorite(post)">
+              <ion-option-button ng-if="post.favorited === false" class="ion-ios-heart-outline" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher="" ng-click="favorite(post)">
               </ion-option-button>
-              <ion-option-button ng-if="post.favorited" class="ion-ios-heart" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher ng-click="unfavorite(post)">
+              <ion-option-button ng-if="post.favorited" class="ion-ios-heart" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher="" ng-click="unfavorite(post)">
               </ion-option-button>
             </ion-item>
           </ion-list>
@@ -62,7 +69,7 @@
               <i class="icon ion-ios-drag"></i>
             </button>
             <!-- New User button-->
-            <button id= "add-user-button" class="button" ng-click="newUser()">
+            <button id="add-user-button" class="button" ng-click="newUser()">
               <i class="icon ion-person-add"></i>
             </button>
         </ion-header-bar>
@@ -70,7 +77,7 @@
         <ion-content class="has-footer">
           <!-- Users List -->
           <ion-list show-reorder="data.showReorder" can-swipe="true">
-            <ion-item class="username-list-item" ng-repeat="user in users track by $index" >
+            <ion-item class="username-list-item" ng-repeat="user in users track by $index">
               <p class="username">{{user.username}}</p>
               <ion-option-button class="button-assertive" ng-click="unfollowUser(user)">Unfollow</ion-option-button>
               <ion-reorder-button class="ion-navicon" on-reorder="reorderUsersInLocalStorage(user, $fromIndex, $toIndex)"></ion-reorder-button>
