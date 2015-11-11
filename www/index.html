@@ -23,14 +23,14 @@
 
     <!-- script to open links using inappbrowser -->
     <script>
-    function openExternal(elem) {
-      window.open(elem.getAttribute('href'), '_system', 'location=yes');
-      return false; // Prevent execution of the default onClick handler 
-    }
+      function openExternal(elem) {
+        window.open(elem.getAttribute('href'), '_system', 'location=yes');
+        return false; // Prevent execution of the default onClick handler 
+      }
     </script>
   </head>
-    <body ng-app="Wiled" ng-controller="NewsfeedCtrl">
-      <ion-side-menus>
+  <body ng-app="Wiled" ng-controller="NewsfeedCtrl">
+    <ion-side-menus>
 
       <!-- Center content -->
       <ion-side-menu-content>
@@ -51,9 +51,9 @@
               <img ng-if="post.thumbnail_url === null" ng-src="img/reddit-missing-thumbnail.png">
               <h2>{{post.title}}</h2>
               <p><span style="color:blue">{{post.subreddit}}</span> {{post.author}}</p>
-              <ion-option-button ng-if="post.favorited === false" class="ion-ios-heart-outline" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher="" ng-click="favorite(post)">
+              <ion-option-button ng-if="post.favorited === false" class="ion-ios-heart-outline" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher ng-click="favorite(post)" stop-event='click'>
               </ion-option-button>
-              <ion-option-button ng-if="post.favorited" class="ion-ios-heart" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher="" ng-click="unfavorite(post)">
+              <ion-option-button ng-if="post.favorited" class="ion-ios-heart" on-icon="ion-ios-heart" off-icon="ion-ios-heart-outline" favorite-icon-switcher ng-click="unfavorite(post)" stop-event='click'>
               </ion-option-button>
             </ion-item>
           </ion-list>
@@ -64,14 +64,14 @@
       <ion-side-menu side="left">
         <ion-header-bar class="bar-dark">
           <h1 class="title">Users</h1>
-            <!-- Reorder Users button-->
-            <button class="button" ng-click="data.showReorder = !data.showReorder">
-              <i class="icon ion-ios-drag"></i>
-            </button>
-            <!-- New User button-->
-            <button id="add-user-button" class="button" ng-click="newUser()">
-              <i class="icon ion-person-add"></i>
-            </button>
+          <!-- Reorder Users button-->
+          <button class="button" ng-click="data.showReorder = !data.showReorder">
+            <i class="icon ion-ios-drag"></i>
+          </button>
+          <!-- New User button-->
+          <button id="add-user-button" class="button" ng-click="newUser()">
+            <i class="icon ion-person-add"></i>
+          </button>
         </ion-header-bar>
 
         <ion-content class="has-footer">
@@ -130,7 +130,6 @@
         </div>
 
       </script>
-
     </ion-side-menus>
   </body>
 </html>

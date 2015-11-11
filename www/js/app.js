@@ -39,11 +39,11 @@ angular.module('ionic.utils', [])
 
 angular.module('Wiled', ['ionic', 'ionic.utils'])
 
-.controller('NewsfeedCtrl', function($scope, 
-                                     $ionicModal, 
-                                     $http, 
-                                     $ionicPopup, 
-                                     $localstorage, 
+.controller('NewsfeedCtrl', function($scope,
+                                     $ionicModal,
+                                     $http,
+                                     $ionicPopup,
+                                     $localstorage,
                                      $ionicActionSheet,
                                      $ionicSideMenuDelegate,
                                      $q) {
@@ -93,7 +93,7 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
   // Check for existing followed user
   $scope.checkExistingFollowedUser = function(user) {
     for (var i = 0; i < $scope.users.length; i++) {
-      if ($scope.users[i]['username'] === user.username) { 
+      if ($scope.users[i]['username'] === user.username) {
         $scope.showAlert('Alert!', user.username + ' is already being followed.');
         $scope.closeNewUser();
         return true;
@@ -121,7 +121,7 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
   // Unfollow a user
   $scope.unfollowUser = function(user) {
     for (var i = 0; i < $scope.users.length; i++) {
-      if ($scope.users[i]['username'] === user.username) { 
+      if ($scope.users[i]['username'] === user.username) {
         $scope.users.splice(i, 1);
         break;
       }
@@ -173,7 +173,7 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
     }, function(err) {
       console.error('ERR', err);
       // err.status will contain the status code
-    }) 
+    })
   };
 
   // Remove user posts
@@ -286,7 +286,7 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
   // Check for existing favorited post
   $scope.checkExistingFavoritedPost = function(post) {
     for (var i = 0; i < $scope.favoritePosts.length; i++) {
-      if ($scope.favoritePosts[i]['id'] === post.id) { 
+      if ($scope.favoritePosts[i]['id'] === post.id) {
         return true;
       }
     }
@@ -391,8 +391,8 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
 //Icon switch function to change icon on click
 .directive('favoriteIconSwitcher', function() {
   return {
-    restrict : 'A', 
-    link : function(scope, elem, attrs) {   
+    restrict : 'A',
+    link : function(scope, elem, attrs) {
       var favorited = (attrs.class === 'ion-ios-heart button');
       elem.on('click', function() {
         if(favorited === true) {
@@ -404,6 +404,22 @@ angular.module('Wiled', ['ionic', 'ionic.utils'])
         }
         favorited = !favorited
       });
+    }
+  };
+})
+
+// Stop propogation for opening link in a new window when
+// clicking on the favorite/unfavorite icon button located
+// within the ion-list-item
+.directive('stopEvent', function () {
+  return {
+    restrict: 'A',
+    link: function (scope, element, attr) {
+      if(attr && attr.stopEvent) {
+        element.bind(attr.stopEvent, function (e) {
+          e.stopPropagation();
+        });
+      }
     }
   };
 });
