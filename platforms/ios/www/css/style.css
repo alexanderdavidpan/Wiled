@@ -1,1 +1,12 @@
 /* Empty. Add your own CSS if you like */
+ion-option-button.ion-ios-heart-outline, ion-option-button.ion-ios-heart {
+  font-size: 200%;
+}
+
+ion-option-button.ion-ios-heart, ion-option-button.ion-ios-heart:hover  {
+  color: red;
+}
+
+input.username {
+    width: 100%;
+}

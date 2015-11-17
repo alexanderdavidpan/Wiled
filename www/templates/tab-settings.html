@@ -1,0 +1,27 @@
+<ion-view view-title="Settings">
+  <ion-content>
+    <ion-list>
+    <ion-toggle  ng-model="settings.enableFriends">
+        Enable Friends
+    </ion-toggle>
+    </ion-list>
+    <div class="item item-divider">
+        Users
+    </div>
+    <ion-list show-reorder="data.showReorder" can-swipe="true">
+        <ion-item class="username-list-item" ng-repeat="user in users track by $index">
+            <p class="username">{{user.username}}</p>
+            <ion-option-button class="button-assertive" ng-click="unfollowUser(user)">Unfollow</ion-option-button>
+            <ion-reorder-button class="ion-navicon" on-reorder="reorderUsersInLocalStorage(user, $fromIndex, $toIndex)"></ion-reorder-button>
+        </ion-item>
+    </ion-list>
+    <div class="item item-input-inset">
+        <label class="item-input-wrapper">
+            <input class="username" type="text" placeholder="Username" ng-model="user.username">
+        </label>
+        <button class="button button-small" ng-click="addUser(user)">
+            Follow
+        </button>
+    </div>
+  </ion-content>
+</ion-view>

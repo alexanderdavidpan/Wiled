@@ -3,6 +3,10 @@ ion-option-button.ion-ios-heart-outline, ion-option-button.ion-ios-heart {
   font-size: 200%;
 }
 
-.ion-ios-heart, .ion-ios-heart:hover  {
+ion-option-button.ion-ios-heart, ion-option-button.ion-ios-heart:hover  {
   color: red;
+}
+
+input.username {
+    width: 100%;
 }
