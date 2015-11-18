@@ -1,91 +1,14 @@
 angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
 
 .controller('NewsfeedCtrl', function($scope,
-                                     $ionicModal,
                                      $http,
-                                     $ionicPopup,
                                      $localstorage,
-                                     $ionicActionSheet,
-                                     $ionicSideMenuDelegate,
-                                     $q) {
+                                     $ionicActionSheet) {
   $scope.$on('$ionicView.beforeEnter', function() {
     $scope.posts = [];
     $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
     $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
   });
-
-
-  // Adds a user when the add user form is submitted
-  $scope.addUser = function(user) {
-    var isExistingUser = $scope.checkExistingFollowedUser(user);
-
-    $scope.verifyUser(user).then(function(resp){
-      username = resp['data']['data']['name']
-      //Set username to correct format based on reddit data
-      user.username = username
-      if(!isExistingUser){
-        $scope.users.push({
-          username: username
-        });
-        $scope.addUserToLocalStorage(user);
-        $scope.userModal.hide();
-        user.title = "";
-        $scope.fetchUserPosts(user);
-      } else {
-        return false;
-      }
-    })
-  };
-
-  // Check for existing followed user
-  $scope.checkExistingFollowedUser = function(user) {
-    for (var i = 0; i < $scope.users.length; i++) {
-      if ($scope.users[i]['username'] === user.username) {
-        $scope.showAlert('Alert!', user.username + ' is already being followed.');
-        $scope.closeNewUser();
-        return true;
-      }
-    }
-    return false;
-  };
-
-  //Verify reddit user exists
-  $scope.verifyUser = function(user) {
-    var defer = $q.defer();
-
-    $http.get('https://www.reddit.com/user/' + user.username + '/about.json').then(function(resp) {
-      //Must resolve deffered promise to get correct username before adding user
-      defer.resolve(resp);
-    }, function(err) {
-      console.error('Error: Not a valid reddit username', err);
-      $scope.closeNewUser();
-      $scope.showAlert('Alert!', user.username + ' is not a valid username.');
-      return false;
-    });
-    return defer.promise;
-  };
-
-  // Unfollow a user
-  $scope.unfollowUser = function(user) {
-    for (var i = 0; i < $scope.users.length; i++) {
-      if ($scope.users[i]['username'] === user.username) {
-        $scope.users.splice(i, 1);
-        break;
-      }
-    }
-    $scope.removeUserFromLocalStorage(user);
-    $scope.removeUserPosts(user);
-  };
-
-  // Open our new user modal
-  $scope.newUser = function() {
-    $scope.userModal.show();
-  };
-
-  // Close the new user modal
-  $scope.closeNewUser = function() {
-    $scope.userModal.hide();
-  };
 
   // Fetch user posts
   $scope.fetchUserPosts = function(user) {
@@ -123,15 +46,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
     })
   };
 
-  // Remove user posts
-  $scope.removeUserPosts = function(user) {
-    for(var i = $scope.posts.length -1; i >= 0 ; i--){
-      if($scope.posts[i]['author'] === user.username){
-        $scope.posts.splice(i, 1);
-      }
-    }
-  }
-
   // Sort newsfeed by newest descending
   $scope.sortNewsfeedByNewest = function(list) {
     list.sort(function(a, b){
@@ -154,52 +68,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
       if(keyA < keyB) return 1;
       return 0;
     });
-  };
-
-  // Alert dialog
-  $scope.showAlert = function(title, template) {
-    var alertPopup = $ionicPopup.alert({
-      title: title,
-      template: template
-    });
-    alertPopup.then(function(res) {
-      console.log(title + ' - ' + template);
-    });
-  };
-
-  //Add username to localstorage
-  $scope.addUserToLocalStorage = function(user) {
-    // Parse any JSON previously stored in allEntries
-    var existingEntries = JSON.parse(localStorage.getItem("users"));
-    if(existingEntries == null) existingEntries = [];
-
-    localStorage.setItem("users", JSON.stringify(user));
-    // Save allEntries back to local storage
-    existingEntries.push(user);
-    localStorage.setItem("users", JSON.stringify(existingEntries));
-  };
-
-  //Remove username from localstorage
-  $scope.removeUserFromLocalStorage = function(user) {
-    // Parse any JSON previously stored in allEntries
-    var existingEntries = JSON.parse(localStorage.getItem("users"));
-    if(existingEntries == null) existingEntries = [];
-
-    // Save allEntries back to local storage
-    for(var i = existingEntries.length -1; i >= 0 ; i--){
-      if(existingEntries[i]['username'] === user.username){
-        existingEntries.splice(i, 1);
-      }
-    }
-
-    localStorage.setItem("users", JSON.stringify(existingEntries));
-  };
-
-  //Reorder users in localstorage
-  $scope.reorderUsersInLocalStorage = function(user, fromIndex, toIndex) {
-    $scope.users.splice(fromIndex, 1);
-    $scope.users.splice(toIndex, 0, user);
-    localStorage.setItem("users", JSON.stringify($scope.users));
   };
 
   //Add favorite post to localstorage
@@ -287,10 +155,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
     }
   };
 
-  $scope.data = {
-    showReorder: false
-  };
-
   // Show sort options
   $scope.showSortOptions = function() {
     var hideSheet = $ionicActionSheet.show({
@@ -375,8 +239,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
   $scope.$on('$ionicView.beforeEnter', function() {
     $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
   });
-
-  $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
 
   // Show favorited posts
   $scope.showFavoritePosts = function() {
@@ -479,10 +341,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
     }
   };
 
-  $scope.data = {
-    showReorder: false
-  };
-
   //Remove favorite post to localstorage
   $scope.removeFavoritePostFromLocalStorage = function(post) {
     // Parse any JSON previously stored in allEntries
@@ -507,7 +365,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
 .controller('SettingsCtrl', function($scope,
                                      $http,
                                      $localstorage,
-                                     $ionicSideMenuDelegate,
                                      $q,
                                      $ionicPopup) {
 
