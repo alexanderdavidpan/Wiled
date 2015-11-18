@@ -32,33 +32,11 @@
     </script>
   </head>
   <body ng-app="Wilder">
-    <ion-side-menus>
-      <!-- The nav bar that will be updated as we navigate between views. -->
-      <ion-nav-bar class="bar-stable">
-        <ion-nav-back-button>
-        </ion-nav-back-button>
-      </ion-nav-bar>
-      <!-- Left menu -->
-      <ion-side-menu side="left">
-        <ion-content class="has-footer">
-          <!-- Users List -->
-          <ion-list show-reorder="data.showReorder" can-swipe="true">
-            <ion-item class="username-list-item" ng-repeat="user in users track by $index">
-              <p class="username">{{user.username}}</p>
-              <ion-option-button class="button-assertive" ng-click="unfollowUser(user)">Unfollow</ion-option-button>
-              <ion-reorder-button class="ion-navicon" on-reorder="reorderUsersInLocalStorage(user, $fromIndex, $toIndex)"></ion-reorder-button>
-            </ion-item>
-          </ion-list>
-        </ion-content>
-      </ion-side-menu>
-      <!--
-        The views will be rendered in the <ion-nav-view> directive below
-        Templates are in the /templates folder (but you could also
-        have templates inline in this html file if you'd like).
-      -->
-      <ion-side-menu-content>
-        <ion-nav-view></ion-nav-view>
-      <ion-side-menu-content>
-    <ion-side-menus>
+    <!-- The nav bar that will be updated as we navigate between views. -->
+    <ion-nav-bar class="bar-stable">
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+    </ion-nav-bar>
+    <ion-nav-view></ion-nav-view>
   </body>
 </html>

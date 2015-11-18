@@ -8,12 +8,12 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
                                      $ionicActionSheet,
                                      $ionicSideMenuDelegate,
                                      $q) {
+  $scope.$on('$ionicView.beforeEnter', function() {
+    $scope.posts = [];
+    $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
+    $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
+  });
 
-  $scope.posts = [];
-
-  $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
-
-  $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
 
   // Adds a user when the add user form is submitted
   $scope.addUser = function(user) {
@@ -317,13 +317,6 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
     });
   };
 
-  // // Show favorited posts
-  // $scope.showFavoritePosts = function() {
-  //   $scope.posts = $scope.favoritePosts;
-  //   $scope.sortNewsfeedByNewest($scope.posts);
-  //   $scope.checkAlreadyFavoritedPosts();
-  // };
-
   // Show regular newsfeed
   $scope.showDefaultNewsfeed = function() {
     angular.forEach($scope.users, function(user){
@@ -333,8 +326,9 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
     })
   };
 
-  $scope.showDefaultNewsfeed();
-
+  $scope.$on('$ionicView.beforeEnter', function() {
+    $scope.showDefaultNewsfeed();
+  });
 })
 
 //Icon switch function to change icon on click
@@ -373,13 +367,149 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
   };
 })
 
+
+.controller('FavoritesCtrl', function($scope,
+                                      $localstorage,
+                                      $ionicActionSheet) {
+
+  $scope.$on('$ionicView.beforeEnter', function() {
+    $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
+  });
+
+  $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
+
+  // Show favorited posts
+  $scope.showFavoritePosts = function() {
+    $scope.sortNewsfeedByNewest($scope.favoritePosts);
+    $scope.checkAlreadyFavoritedPosts();
+  };
+
+  // Show sort options
+  $scope.showSortOptions = function() {
+    var hideSheet = $ionicActionSheet.show({
+      buttons: [
+        { text: 'New' },
+        { text: 'Popular' }
+      ],
+      titleText: 'Sort posts by:',
+      cancelText: 'Cancel',
+      cancel: function() {
+        return false;
+      },
+      buttonClicked: function(index) {
+        //index is the index of button clicked
+        // {0: 'New', 1: 'Popular'}
+        if (index === 1) {
+          $scope.sortNewsfeedByPopular($scope.favoritePosts);
+          return true;
+        } else {
+          $scope.sortNewsfeedByNewest($scope.favoritePosts);
+          return true;
+        }
+      }
+    });
+  };
+
+  // Sort newsfeed by newest descending
+  $scope.sortNewsfeedByNewest = function(list) {
+    list.sort(function(a, b){
+      var keyA = new Date(a.created),
+      keyB = new Date(b.created);
+      // Compare the 2 dates
+      if(keyA > keyB) return -1;
+      if(keyA < keyB) return 1;
+      return 0;
+    });
+  };
+
+  // Sort newsfeed by popularity (most points)
+  $scope.sortNewsfeedByPopular = function(list) {
+    list.sort(function(a, b){
+      var keyA = new Date(a.score),
+      keyB = new Date(b.score);
+      // Compare the 2 dates
+      if(keyA > keyB) return -1;
+      if(keyA < keyB) return 1;
+      return 0;
+    });
+  };
+
+  // Check for already favorited posts
+  // Loops through all favorite post ids
+  // Marks posts as favorited if ids match
+  $scope.checkAlreadyFavoritedPosts = function(){
+    favoritePostIds = [];
+
+    for (i in $scope.favoritePosts){
+      favoritePostIds.push($scope.favoritePosts[i]['id'])
+    }
+
+    for (i in $scope.posts) {
+      for (j in favoritePostIds) {
+        if($scope.posts[i]['id'] === favoritePostIds[j]) {
+          $scope.posts[i]['favorited'] = true;
+        }
+      }
+    }
+  };
+
+  // Check for existing favorited post
+  $scope.checkExistingFavoritedPost = function(post) {
+    for (var i = 0; i < $scope.favoritePosts.length; i++) {
+      if ($scope.favoritePosts[i]['id'] === post.id) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  //Unfavorite a post and remove it from localstorage
+  $scope.unfavorite = function(post) {
+    var isFavoritedPost = $scope.checkExistingFavoritedPost(post);
+
+    if(isFavoritedPost){
+
+      for(var i = $scope.favoritePosts.length -1; i >= 0 ; i--){
+        if($scope.favoritePosts[i]['id'] === post.id){
+          $scope.favoritePosts.splice(i, 1);
+        }
+      }
+
+      $scope.removeFavoritePostFromLocalStorage(post);
+    }
+  };
+
+  $scope.data = {
+    showReorder: false
+  };
+
+  //Remove favorite post to localstorage
+  $scope.removeFavoritePostFromLocalStorage = function(post) {
+    // Parse any JSON previously stored in allEntries
+    var existingEntries = JSON.parse(localStorage.getItem("favoritePosts"));
+    if(existingEntries == null) existingEntries = [];
+
+    // Save allEntries back to local storage
+    for(var i = existingEntries.length -1; i >= 0 ; i--){
+      if(existingEntries[i]['id'] === post.id){
+        existingEntries.splice(i, 1);
+      }
+    }
+
+    localStorage.setItem("favoritePosts", JSON.stringify(existingEntries));
+  };
+
+  $scope.$on('$ionicView.enter', function() {
+    $scope.showFavoritePosts();
+  });
+})
+
 .controller('SettingsCtrl', function($scope,
                                      $http,
                                      $localstorage,
                                      $ionicSideMenuDelegate,
                                      $q,
                                      $ionicPopup) {
-  $scope.posts =
 
   $scope.users = JSON.parse($localstorage.get('users') || '[{"username":"Here_Comes_The_King"},{"username":"GovSchwarzenegger"}]')
 
@@ -525,134 +655,4 @@ angular.module('Wilder.controllers', ['ionic', 'ionic.utils'])
       }
     }
   }
-})
-
-.controller('FavoritesCtrl', function($scope,
-                                      $localstorage,
-                                      $ionicActionSheet) {
-
-  $scope.favoritePosts = JSON.parse($localstorage.get('favoritePosts') || '[]')
-
-  // Show favorited posts
-  $scope.showFavoritePosts = function() {
-    $scope.sortNewsfeedByNewest($scope.favoritePosts);
-    $scope.checkAlreadyFavoritedPosts();
-  };
-
-  // Show sort options
-  $scope.showSortOptions = function() {
-    var hideSheet = $ionicActionSheet.show({
-      buttons: [
-        { text: 'New' },
-        { text: 'Popular' }
-      ],
-      titleText: 'Sort posts by:',
-      cancelText: 'Cancel',
-      cancel: function() {
-        return false;
-      },
-      buttonClicked: function(index) {
-        //index is the index of button clicked
-        // {0: 'New', 1: 'Popular'}
-        if (index === 1) {
-          $scope.sortNewsfeedByPopular($scope.favoritePosts);
-          return true;
-        } else {
-          $scope.sortNewsfeedByNewest($scope.favoritePosts);
-          return true;
-        }
-      }
-    });
-  };
-
-  // Sort newsfeed by newest descending
-  $scope.sortNewsfeedByNewest = function(list) {
-    list.sort(function(a, b){
-      var keyA = new Date(a.created),
-      keyB = new Date(b.created);
-      // Compare the 2 dates
-      if(keyA > keyB) return -1;
-      if(keyA < keyB) return 1;
-      return 0;
-    });
-  };
-
-  // Sort newsfeed by popularity (most points)
-  $scope.sortNewsfeedByPopular = function(list) {
-    list.sort(function(a, b){
-      var keyA = new Date(a.score),
-      keyB = new Date(b.score);
-      // Compare the 2 dates
-      if(keyA > keyB) return -1;
-      if(keyA < keyB) return 1;
-      return 0;
-    });
-  };
-
-  // Check for already favorited posts
-  // Loops through all favorite post ids
-  // Marks posts as favorited if ids match
-  $scope.checkAlreadyFavoritedPosts = function(){
-    favoritePostIds = [];
-
-    for (i in $scope.favoritePosts){
-      favoritePostIds.push($scope.favoritePosts[i]['id'])
-    }
-
-    for (i in $scope.posts) {
-      for (j in favoritePostIds) {
-        if($scope.posts[i]['id'] === favoritePostIds[j]) {
-          $scope.posts[i]['favorited'] = true;
-        }
-      }
-    }
-  };
-
-  // Check for existing favorited post
-  $scope.checkExistingFavoritedPost = function(post) {
-    for (var i = 0; i < $scope.favoritePosts.length; i++) {
-      if ($scope.favoritePosts[i]['id'] === post.id) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  //Unfavorite a post and remove it from localstorage
-  $scope.unfavorite = function(post) {
-    var isFavoritedPost = $scope.checkExistingFavoritedPost(post);
-
-    if(isFavoritedPost){
-
-      for(var i = $scope.favoritePosts.length -1; i >= 0 ; i--){
-        if($scope.favoritePosts[i]['id'] === post.id){
-          $scope.favoritePosts.splice(i, 1);
-        }
-      }
-
-      $scope.removeFavoritePostFromLocalStorage(post);
-    }
-  };
-
-  $scope.data = {
-    showReorder: false
-  };
-
-  //Remove favorite post to localstorage
-  $scope.removeFavoritePostFromLocalStorage = function(post) {
-    // Parse any JSON previously stored in allEntries
-    var existingEntries = JSON.parse(localStorage.getItem("favoritePosts"));
-    if(existingEntries == null) existingEntries = [];
-
-    // Save allEntries back to local storage
-    for(var i = existingEntries.length -1; i >= 0 ; i--){
-      if(existingEntries[i]['id'] === post.id){
-        existingEntries.splice(i, 1);
-      }
-    }
-
-    localStorage.setItem("favoritePosts", JSON.stringify(existingEntries));
-  };
-
-  $scope.showFavoritePosts();
 });
